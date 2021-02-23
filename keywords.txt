@@ -1,0 +1,4 @@
+STMPE610	KEYWORD1
+begin	KEYWORD2
+
+writeRegister8	KEYWORD2

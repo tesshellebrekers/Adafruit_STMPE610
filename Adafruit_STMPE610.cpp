@@ -131,11 +131,11 @@ boolean Adafruit_STMPE610::begin(uint8_t i2caddr) {
   // Serial.println(readRegister8(STMPE_TSC_CTRL), HEX);
   writeRegister8(STMPE_INT_EN, STMPE_INT_EN_TOUCHDET);
   writeRegister8(STMPE_ADC_CTRL1, STMPE_ADC_CTRL1_10BIT |
-                                      (0x3 << 4)); // 64 clocks per conversion
-  writeRegister8(STMPE_ADC_CTRL2, STMPE_ADC_CTRL2_6_5MHZ);
+                                      STMPE_ADC_CTRL1_CLOCK_64); 
+  writeRegister8(STMPE_ADC_CTRL2, STMPE_ADC_CTRL2_3_25MHZ);
   writeRegister8(STMPE_TSC_CFG, STMPE_TSC_CFG_4SAMPLE |
-                                    STMPE_TSC_CFG_DELAY_100US |
-                                    STMPE_TSC_CFG_SETTLE_100US);
+                                    STMPE_TSC_CFG_DELAY_50MS |
+                                    STMPE_TSC_CFG_SETTLE_50MS);
   writeRegister8(STMPE_TSC_FRACTION_Z, 0x6);
   writeRegister8(STMPE_FIFO_TH, 1);
   writeRegister8(STMPE_FIFO_STA, STMPE_FIFO_STA_RESET);
@@ -209,6 +209,25 @@ void Adafruit_STMPE610::readData(uint16_t *x, uint16_t *y, uint8_t *z) {
   *y <<= 8;
   *y |= data[2];
   *z = data[3];
+}
+
+/*!
+ *  @brief  Reads touchscreen data into provided array[4]
+ *  @param  data
+ *          pointer to array that can hold 5 bytes
+ */
+void Adafruit_STMPE610::readAllData(uint16_t * data)
+{
+  uint8_t rawdata[4];
+  for (uint8_t i = 0; i < 4; i++) {
+    rawdata[i] = readRegister8(0xD7); // _spi->transfer(0x00);
+    // Serial.print("0x"); Serial.print(data[i], HEX); Serial.print(" / ");
+  }
+
+  data[0] = (rawdata[0] << 4) | (rawdata[1] >> 4);
+  data[1] = ((rawdata[1] & 0x0F) << 8) | rawdata[2];
+  data[2] = rawdata[3];
+  
 }
 
 /*!

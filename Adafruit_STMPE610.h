@@ -170,6 +170,8 @@ public:
   uint16_t readRegister16(uint8_t reg);
   uint8_t readRegister8(uint8_t reg);
   void readData(uint16_t *x, uint16_t *y, uint8_t *z);
+  void readAllData(uint16_t * data);
+
   uint16_t getVersion();
   boolean touched();
   boolean bufferEmpty();
